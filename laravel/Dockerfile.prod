@@ -1,0 +1,23 @@
+FROM php:8.2-cli AS BUILDER
+
+WORKDIR /var/www
+
+RUN apt-get update && \
+    apt-get install libzip-dev -y && \
+    docker-php-ext-install zip
+
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php composer-setup.php && \
+    php -r "unlink('composer-setup.php');" && \
+    mv composer.phar /usr/local/bin/composer
+
+RUN composer create-project laravel/laravel laravel
+
+FROM php:8.2-fpm-alpine
+WORKDIR /var/www
+RUN rm -rf /var/www/html
+COPY --from=BUILDER /var/www/laravel /var/www/html
+RUN ln -s /var/www/html/public /var/www/html/html
+RUN chown -R www-data:www-data /var/www/html
+EXPOSE 9000
+CMD ["php-fpm"]
