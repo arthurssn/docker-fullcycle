@@ -1,16 +1,20 @@
-version: "3.7"
+version: "3.8" # Atualize para uma versão mais recente, se possível
 
 services:
   app:
+    command: node index.js
     container_name: node-app
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - .:/app
-      - /app/node_modules
+      - .:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
     networks:
       - node-network
+    ports:
+      - "3000:3000"
   nginx:
     container_name: node-nginx
     image: nginx:alpine
@@ -22,6 +26,10 @@ services:
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - node-network
+
+volumes:
+  node_modules:
+
 networks:
   node-network:
     driver: bridge
