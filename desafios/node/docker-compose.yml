@@ -2,7 +2,6 @@ version: "3.8" # Atualize para uma versão mais recente, se possível
 
 services:
   app:
-    command: node index.js
     container_name: node-app
     restart: unless-stopped
     build:
@@ -26,9 +25,26 @@ services:
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - node-network
+  mysql:
+    image: mysql
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=nodeapp
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - node-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      retries: 10
+      interval: 3s
+      timeout: 30s
 
 volumes:
   node_modules:
+  mysql-data:
 
 networks:
   node-network:
