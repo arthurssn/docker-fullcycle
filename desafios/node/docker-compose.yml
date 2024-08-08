@@ -25,6 +25,7 @@ services:
       - node-network
   mysql:
     image: mysql
+    container_name: node-mysql
     ports:
       - 3306:3306
     environment:
