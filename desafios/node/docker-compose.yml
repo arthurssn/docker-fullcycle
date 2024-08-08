@@ -1,4 +1,4 @@
-version: "3.8" # Atualize para uma versão mais recente, se possível
+version: "3.8"
 
 services:
   app:
@@ -12,8 +12,6 @@ services:
       - node_modules:/usr/src/app/node_modules
     networks:
       - node-network
-    ports:
-      - "3000:3000"
   nginx:
     container_name: node-nginx
     image: nginx:alpine
