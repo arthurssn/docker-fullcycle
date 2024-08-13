@@ -12,6 +12,9 @@ services:
       - node_modules:/usr/src/app/node_modules
     networks:
       - node-network
+    depends_on:
+      mysql:
+        condition: service_healthy
   nginx:
     container_name: node-nginx
     image: nginx:alpine
@@ -36,7 +39,17 @@ services:
     networks:
       - node-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "root",
+          "-p password",
+        ]
       retries: 10
       interval: 3s
       timeout: 30s
